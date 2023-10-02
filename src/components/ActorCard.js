@@ -27,17 +27,34 @@ const Image = styled.img`
   object-fit: cover; /* Избегаем искажений изображения */
 `;
 
-const ActorCard = ({ data, onClick }) => {
+const ActorCard = ({ data, onClick, type }) => {
   return (
     <Card onClick={onClick}>
-      {data?.profile_path ? (
-        <Image src={`https://image.tmdb.org/t/p/w500${data?.profile_path}`} />
-      ) : (
-        <Image src={ava} />
-      )}
+      {type === "movie" ? (
+        <>
+          {data?.profile_path ? (
+            <Image
+              src={`https://image.tmdb.org/t/p/w500${data?.profile_path}`}
+            />
+          ) : (
+            <Image src={ava} />
+          )}
 
-      <div>{data.name}</div>
-      <div>{data.character}</div>
+          <div>{data.name}</div>
+          <div>{data.character}</div>
+        </>
+      ) : type === "actor" ? (
+        <>
+          {data?.poster_path ? (
+            <Image
+              src={`https://image.tmdb.org/t/p/w500${data?.poster_path}`}
+            />
+          ) : (
+            <Image src={ava} />
+          )}
+          <div>{data.title}</div>
+        </>
+      ) : null}
     </Card>
   );
 };

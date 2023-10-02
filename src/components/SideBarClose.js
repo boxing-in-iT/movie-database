@@ -29,8 +29,13 @@ const SideBarClose = () => {
   const { lastLink } = useSelector((state) => state.movie);
 
   const handleClick = () => {
-    dispatch(setOpenSideBar(true));
-    navigate(lastLink);
+    console.log(lastLink);
+    if (lastLink == "/trending") {
+      dispatch(setOpenSideBar(true));
+      navigate(lastLink);
+    } else {
+      navigate("trending");
+    }
   };
 
   return (

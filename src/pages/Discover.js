@@ -10,6 +10,7 @@ import {
 } from "../redux/features/movieSlice";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import Error from "../components/Error";
 
 const Section = styled.div`
   display: flex;
@@ -74,6 +75,7 @@ const Discover = () => {
   }, []);
 
   if (isFetching) return <Loader />;
+  if (error) return <Error />;
 
   const handleCLick = (id) => {
     dispatch(setOpenSideBar(false));

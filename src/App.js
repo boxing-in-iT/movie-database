@@ -63,7 +63,7 @@ const App = () => {
             <Div3>
               <Routes>
                 <Route path="/trending" element={<Discover />} />
-                <Route path="/main" element={<Main />} />
+                <Route path="/" element={<Main />} />
                 <Route path="/movie/:id" element={<MoviePage />} />
                 <Route path="/search/:searchTerm" element={<Search />} />
                 <Route path="/byKeywords/:keyword" element={<MovieList />} />
