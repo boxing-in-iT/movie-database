@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import {
   useGetMovieByPersonIdQuery,
@@ -7,49 +7,63 @@ import {
 } from "../redux/services/tmdb";
 import ActorCard from "../components/ActorCard";
 import Loader from "../components/Loader";
+import { useDispatch } from "react-redux";
+import { setLastLink, setOpenSideBar } from "../redux/features/movieSlice";
 
 const Section = styled.section`
-  margin-top: 2rem;
-  width: 90%;
+  width: 80%;
   margin: 0 auto;
-`;
-
-const Container = styled.div`
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 `;
 
 const LeftBox = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  margin-top: 2rem;
 `;
 
 const Image = styled.img`
-  width: 20rem;
+  width: 100%;
+  max-width: 300px;
   border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* width: 20rem;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
 `;
 
-const Social = styled.div`
-  display: flex;
-  gap: 2rem;
+const ActorInfo = styled.div`
+  margin-top: 1rem;
+  font-size: 0.9rem;
 `;
 
 const RightBox = styled.div`
   width: 70%;
   display: flex;
   flex-direction: column;
+  margin-top: 0.5rem;
+`;
+
+const Name = styled.h1`
+  font-size: 2rem;
+  margin-bottom: 1rem;
+`;
+
+const Biography = styled.p`
+  font-size: 1rem;
+  line-height: 1.4;
 `;
 
 const Cards = styled.div`
   max-width: 1200px;
   margin-top: 2rem;
-  display: flex; /* Используем сетку для карточек */
-
-  gap: 1rem; /* Добавим небольшой отступ между карточками */
-  overflow-x: auto; /* Уберем горизонтальную прокрутку */
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
 `;
 
 const Div = styled.div`
@@ -57,10 +71,12 @@ const Div = styled.div`
 `;
 
 const Cast = styled.div`
-  width: 70%;
+  width: 100%;
 `;
 
 const ActorPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { id } = useParams();
   const { data, isFetching, error } = useGetPersonByIdQuery(id);
   const {
@@ -68,32 +84,51 @@ const ActorPage = () => {
     isFetching: moviesLoading,
     error: moviesError,
   } = useGetMovieByPersonIdQuery(id);
-  console.log(movies);
+
+  const handleClick = (id) => {
+    dispatch(setOpenSideBar(false));
+    dispatch(setLastLink("/trending"));
+    navigate(`/movie/${id}`);
+  };
+
+  console.log(data);
 
   if (isFetching || moviesLoading) return <Loader />;
 
   return (
     <Section>
-      <Container>
-        <LeftBox>
-          <Image src={`https://image.tmdb.org/t/p/w500${data?.profile_path}`} />
-          <Social></Social>
-        </LeftBox>
-        <RightBox>
-          <p>{data?.name}</p>
-          <p>Biography:</p>
-          <p>{data?.biography}</p>
-          {/* <Div>
-            <Cast>
-              <Cards>
-                {data?.cast.map((data) => (
-                  <ActorCard data={data} key={data.id} />
-                ))}
-              </Cards>
-            </Cast>
-          </Div> */}
-        </RightBox>
-      </Container>
+      <LeftBox>
+        <Image src={`https://image.tmdb.org/t/p/w500${data?.profile_path}`} />
+        <p>Personal Info</p>
+        <p>Known For</p>
+        <p>{data.known_for_department}</p>
+        <p>Birthday</p>
+        <p>{data.birthday}</p>
+        <p>Place of Birth</p>
+        <p>{data.place_of_birth}</p>
+        <p>Also known as</p>
+        {data?.also_known_as.map((data, i) => (
+          <p>{data}</p>
+        ))}
+      </LeftBox>
+      <RightBox>
+        <Name>{data?.name}</Name>
+        <p>Biography</p>
+        <Biography>{data?.biography}</Biography>
+        <p>Known For</p>
+        <Cast>
+          <Cards>
+            {movies.cast?.map((data) => (
+              <ActorCard
+                onClick={() => handleClick(data.id)}
+                data={data}
+                key={data.id}
+                type={"actor"}
+              />
+            ))}
+          </Cards>
+        </Cast>
+      </RightBox>
     </Section>
   );
 };

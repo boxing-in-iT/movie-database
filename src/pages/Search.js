@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useGetMovieBySearchQuery } from "../redux/services/tmdb";
 import MovieCard from "../components/MovieCard";
 import Loader from "../components/Loader";
+import Error from "../components/Error";
 
 const Section = styled.div`
   display: flex;
@@ -34,6 +35,7 @@ const Search = () => {
   const songs = data?.results;
 
   if (isFetching) return <Loader />;
+  if (error) return <Error />;
 
   const handleCLick = (id) => {
     navigate(`/movie/${id}`);

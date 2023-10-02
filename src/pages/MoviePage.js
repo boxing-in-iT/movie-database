@@ -214,6 +214,7 @@ const MoviePage = () => {
               <ActorCard
                 onClick={() => handleCastClick(data.id)}
                 data={data}
+                type={"movie"}
                 key={data.id}
               />
             ))}
