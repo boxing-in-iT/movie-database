@@ -7,7 +7,35 @@ const options = {
   },
 };
 
-fetch("https://api.themoviedb.org/3/person/78871?language=en-US", options)
+fetch(
+  "https://api.themoviedb.org/3/discover/movie?certification=NR&include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=2002-03-16&primary_release_date.lte=2004-09-20&sort_by=popularity.desc&with_genres=Action%2C%20Horror",
+  options
+)
   .then((response) => response.json())
   .then((response) => console.log(response))
   .catch((err) => console.error(err));
+
+  // tmdb.js
+
+export const useFilteredMoviesQuery = (filters) => {
+  const { genres, fromDate, toDate } = filters;
+
+  return useQuery(
+    ["filteredMovies", filters],
+    async () => {
+      const response = await tmdbApi.fetchBaseQuery(
+        `discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc${
+          genres.length > 0 ? `&with_genres=${genres.join(",")}` : ""
+        }${
+          fromDate ? `&release_date.gte=${fromDate}` : ""
+        }${
+          toDate ? `&release_date.lte=${toDate}` : ""
+        }`
+      );
+      return response.data;
+    }
+  );
+};
+
+
+https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=27

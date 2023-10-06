@@ -21,8 +21,8 @@ const ContentDiv = styled.div`
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
-  background-image: linear-gradient(to bottom right, #ffffff, #121286);
-  /* background-color: white; */
+  /* background-image: linear-gradient(to bottom right, #ffffff, #121286); */
+  background-color: #393e46;
   position: relative; /* Добавляем относительное позиционирование */
 `;
 

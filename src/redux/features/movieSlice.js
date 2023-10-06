@@ -7,6 +7,7 @@ const initialState = {
   lastLink: "",
   backGroundImage: "",
   activePage: 1,
+  filterWindow: false,
 };
 
 const movieSlice = createSlice({
@@ -31,6 +32,9 @@ const movieSlice = createSlice({
     setActivePage: (state, action) => {
       state.activePage = action.payload;
     },
+    setFilterWindow: (state, action) => {
+      state.activePage = action.payload;
+    },
   },
 });
 
@@ -41,6 +45,7 @@ export const {
   setLastLink,
   setBackGroundImage,
   setActivePage,
+  setFilterWindow,
 } = movieSlice.actions;
 
 export default movieSlice.reducer;

@@ -57,7 +57,9 @@ const SideBarOpen = () => {
       </LogoDiv>
       <NavBar>
         <Menu>
-          <MenuItem>Main</MenuItem>
+          <MenuItem>
+            <StyledLink to="/">Main</StyledLink>
+          </MenuItem>
           <MenuItem>
             <StyledLink to="/trending">Trending</StyledLink>
           </MenuItem>
