@@ -26,43 +26,36 @@ const Section = styled.div`
 `;
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   align-items: flex-start;
   width: 100%;
   max-width: 1200px;
-  /* background-color: #fff; */
-  background-image: ${({ bg }) =>
-    bg
-      ? `url(https://image.tmdb.org/t/p/w1280${bg})`
-      : "none"}; /* Задаем фоновое изображение */
-  background-size: cover; /* Растягиваем изображение на всю ширину контейнера */
-  background-position: center; /* Центрируем изображение */
-
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
-const Overlay = styled.div`
-  background-image: linear-gradient(
-    to right,
-    rgba(31.5, 10.5, 94.5, 1) calc((50vw - 170px) - 340px),
-    rgba(31.5, 10.5, 94.5, 0.84) 50%,
-    rgba(31.5, 10.5, 94.5, 0.84) 100%
-  );
+const BackgroundImage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: ${({ bg }) =>
+    bg ? `url(https://image.tmdb.org/t/p/w1280${bg})` : "none"};
+  background-size: cover;
+  background-position: center;
+  opacity: 0.2; /* Измените это значение по вашему усмотрению */
+  border-radius: 10px;
 `;
-
-// const ImageContainer = styled.div`
-//   flex: 1;
-//   display: flex;
-//   justify-content: center;
-// `;
 
 const ImageContainer = styled.div`
   flex: 1;
   display: flex;
   justify-content: center;
   transition: transform 0.3s ease;
+  opacity: 1;
 
   &:hover {
     transform: scale(1.05);
@@ -196,7 +189,8 @@ const MoviePage = () => {
 
   return (
     <Section>
-      <Container bg={data?.backdrop_path}>
+      <Container>
+        <BackgroundImage bg={data?.backdrop_path} />
         <ImageContainer>
           <Image src={`https://image.tmdb.org/t/p/w500${data?.poster_path}`} />
         </ImageContainer>

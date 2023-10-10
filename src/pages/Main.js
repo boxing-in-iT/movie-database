@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MovieCard from "../components/MovieCard";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,6 +15,7 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import Error from "../components/Error";
 import FilterWindow from "../components/FilterWindow";
+import { pagin } from "../components/Pagination";
 
 const Section = styled.div`
   display: flex;
@@ -62,6 +63,7 @@ const FilterButton = styled.h2`
   color: rgb(255 255 255);
   text-align: left;
   cursor: pointer;
+  transform: rotate(90deg);
 `;
 
 const Select = styled.select`
@@ -79,6 +81,7 @@ const Select = styled.select`
 `;
 
 const Main = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     genres: [], // Выбранные жанры
@@ -90,18 +93,33 @@ const Main = () => {
   const { activePage, isOpen, filterWindow } = useSelector(
     (state) => state.movie
   );
+  const topElementRef = useRef(null);
+
+  const { data, isFetching, error } = useByPopularityDescQuery(currentPage);
+
   const {
     data: filter,
     isFetching: loading,
     error: err,
-  } = useGetFilteredMoviesQuery(selectedFilters);
+  } = useGetFilteredMoviesQuery({
+    currentPage: currentPage,
+    filters: selectedFilters,
+  });
 
   useEffect(() => {
     dispatch(setOpenSideBar(true));
   }, []);
 
-  if (loading) return <Loader />;
+  useEffect(() => {
+    if (topElementRef.current) {
+      window.scrollTo({
+        top: topElementRef.current.offsetTop,
+        behavior: "smooth", // Добавляет плавную анимацию прокрутки
+      });
+    }
+  }, [currentPage]);
 
+  if (isFetching) return <Loader />;
   if (err) return <Error />;
 
   const handleCLick = (id) => {
@@ -115,7 +133,7 @@ const Main = () => {
   };
 
   return (
-    <Section>
+    <Section ref={topElementRef}>
       {!filterOpen ? (
         <>
           <Container>
@@ -129,6 +147,8 @@ const Main = () => {
             onClick={FilterCLoseOpen}
             selectedFilters={selectedFilters}
             setSelectedFilters={setSelectedFilters}
+            setFilterOpen={setFilterOpen}
+            setCurrentPage={setCurrentPage}
           />
         </>
       )}
@@ -137,6 +157,7 @@ const Main = () => {
           <MovieCard key={i} data={data} onClick={() => handleCLick(data.id)} />
         ))}
       </CardDiv>
+      {pagin(500, currentPage, setCurrentPage)}
     </Section>
   );
 };

@@ -11,6 +11,7 @@ import {
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import Error from "../components/Error";
+import { pagin } from "../components/Pagination";
 
 const Section = styled.div`
   display: flex;
@@ -68,13 +69,13 @@ const Select = styled.select`
 const Discover = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
   const { rankingBy, activePage, isOpen } = useSelector((state) => state.movie);
   const { data, isFetching, error } = useTrendingByDayQuery(rankingBy || "day");
   useEffect(() => {
     dispatch(setOpenSideBar(true));
   }, []);
 
-  if (isFetching) return <Loader />;
   if (error) return <Error />;
 
   const handleCLick = (id) => {
@@ -98,10 +99,19 @@ const Discover = () => {
         </Select>
       </Container>
       <CardDiv>
-        {data?.results.map((data, i) => (
-          <MovieCard key={i} data={data} onClick={() => handleCLick(data.id)} />
-        ))}
+        {isFetching ? (
+          <Loader />
+        ) : (
+          data?.results.map((data, i) => (
+            <MovieCard
+              key={i}
+              data={data}
+              onClick={() => handleCLick(data.id)}
+            />
+          ))
+        )}
       </CardDiv>
+      {pagin(20, currentPage, setCurrentPage)}
     </Section>
   );
 };

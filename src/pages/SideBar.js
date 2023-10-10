@@ -14,6 +14,10 @@ const Container = styled.div`
   overflow-y: scroll;
   background-color: #0e1111;
   color: white;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 const SideBar = () => {

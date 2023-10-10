@@ -1,11 +1,15 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { setOpenSideBar } from "../redux/features/movieSlice";
 
 const LogoDiv = styled.div`
+  width: 100%;
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-around;
 `;
 
 const Logo = styled.h2``;
@@ -50,6 +54,10 @@ const StyledLink = styled(Link)`
 `;
 
 const SideBarOpen = () => {
+  const dispatch = useDispatch();
+  const close = () => {
+    dispatch(setOpenSideBar(false));
+  };
   return (
     <>
       <LogoDiv>

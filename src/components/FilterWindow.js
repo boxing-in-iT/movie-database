@@ -63,8 +63,14 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const FilterWindow = ({ onClick, selectedFilters, setSelectedFilters }) => {
-  const [selectedGenres, setSelectedGenres] = useState([]);
+const FilterWindow = ({
+  onClick,
+  selectedFilters,
+  setSelectedFilters,
+  setFilterOpen,
+  setCurrentPage,
+}) => {
+  const [selectedGenres, setSelectedGenres] = useState(selectedFilters.genres);
   const [selectedFromDate, setSelectedFromDate] = useState(null);
   const [selectedToDate, setSelectedToDate] = useState(null);
   const [selectedCertifications, setSelectedCertifications] = useState([]);
@@ -169,6 +175,8 @@ const FilterWindow = ({ onClick, selectedFilters, setSelectedFilters }) => {
   const handleFilterChange = () => {
     // Update selected filters based on user selections
     console.log(selectedGenres);
+    setCurrentPage(1);
+    setFilterOpen(false);
     setSelectedFilters({
       genres: selectedGenres,
       fromDate: selectedFromDate,
