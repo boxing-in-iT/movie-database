@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { setOpenSideBar } from "../redux/features/movieSlice";
+import { setOpenHamburger } from "../redux/features/movieSlice";
 
 const LogoDiv = styled.div`
   width: 100%;
@@ -10,6 +10,14 @@ const LogoDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
+`;
+
+const Close = styled.h4`
+  display: none;
+  @media (max-width: 640px) {
+    cursor: pointer;
+    display: block;
+  }
 `;
 
 const Logo = styled.h2``;
@@ -56,20 +64,33 @@ const StyledLink = styled(Link)`
 const SideBarOpen = () => {
   const dispatch = useDispatch();
   const close = () => {
-    dispatch(setOpenSideBar(false));
+    dispatch(setOpenHamburger(false));
   };
+
+  const handleMenuClick = () => {
+    console.log(window.innerWidth);
+    if (window.innerWidth <= 640) {
+      dispatch(setOpenHamburger(false));
+    }
+  };
+
   return (
     <>
       <LogoDiv>
         <Logo>TDBM</Logo>
+        <Close onClick={() => close()}>X</Close>
       </LogoDiv>
       <NavBar>
         <Menu>
           <MenuItem>
-            <StyledLink to="/">Main</StyledLink>
+            <StyledLink to="/" onClick={() => handleMenuClick()}>
+              Main
+            </StyledLink>
           </MenuItem>
           <MenuItem>
-            <StyledLink to="/trending">Trending</StyledLink>
+            <StyledLink to="/trending" onClick={() => handleMenuClick()}>
+              Trending
+            </StyledLink>
           </MenuItem>
           <MenuItem>Your videos</MenuItem>
           <MenuItem>Playlist</MenuItem>

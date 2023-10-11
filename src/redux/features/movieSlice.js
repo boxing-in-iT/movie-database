@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isOpen: true,
+  isHamburgerOpen: false,
   rankingBy: "day",
   genreListId: "",
   lastLink: "",
@@ -23,6 +24,9 @@ const movieSlice = createSlice({
     },
     setOpenSideBar: (state, action) => {
       state.isOpen = action.payload;
+    },
+    setOpenHamburger: (state, action) => {
+      state.isHamburgerOpen = action.payload;
     },
     setLastLink: (state, action) => {
       state.lastLink = action.payload;
@@ -51,7 +55,7 @@ export const {
   setActivePage,
   setFilterWindow,
   setSelectedGenres,
-  setMobileMenuOpen,
+  setOpenHamburger,
 } = movieSlice.actions;
 
 export default movieSlice.reducer;
