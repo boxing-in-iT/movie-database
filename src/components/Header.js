@@ -4,7 +4,7 @@ import { blackTheme } from "../style";
 import SearchBar from "./SearchBar";
 import SideBarClose from "./SideBarClose";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenSideBar } from "../redux/features/movieSlice";
+import { setOpenHamburger } from "../redux/features/movieSlice";
 
 const Container = styled.div`
   height: 10svh;
@@ -23,8 +23,25 @@ const NavBar = styled.nav`
   justify-content: space-between;
   padding-right: 1.5rem;
 `;
+
+const HamburgerMenu = styled.h4`
+  display: none;
+
+  @media (max-width: 640px) {
+    display: flex;
+    font-size: 1.25rem;
+    transform: rotate(90deg);
+    color: white;
+    cursor: pointer;
+  }
+`;
+
 const Header = () => {
   const dispatch = useDispatch();
+
+  const openHamburger = () => {
+    dispatch(setOpenHamburger(true));
+  };
 
   const { isOpen } = useSelector((state) => state.movie);
   return (
@@ -32,6 +49,7 @@ const Header = () => {
       <NavBar>
         {!isOpen ? <SideBarClose /> : <></>}
         <SearchBar />
+        <HamburgerMenu onClick={() => openHamburger()}>|||</HamburgerMenu>
       </NavBar>
     </Container>
   );

@@ -11,6 +11,7 @@ import MoviePage from "./pages/MoviePage";
 import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
+import SideBarMobile from "./components/SideBarMobile";
 
 const Section = styled.div`
   position: relative;
@@ -24,6 +25,10 @@ const ContentDiv = styled.div`
   /* background-image: linear-gradient(to bottom right, #ffffff, #121286); */
   background-color: #393e46;
   position: relative; /* Добавляем относительное позиционирование */
+
+  @media (max-width: 640px) {
+    display: ${(props) => (props.isHamburgerOpen ? "none" : "flex")};
+  }
 `;
 
 const Div2 = styled.div`
@@ -52,12 +57,15 @@ const Div3 = styled.div`
 `;
 
 const App = () => {
-  const { backGroundImage } = useSelector((state) => state.movie);
+  const { backGroundImage, isHamburgerOpen } = useSelector(
+    (state) => state.movie
+  );
   return (
     <BrowserRouter>
       <Section>
+        <SideBarMobile />
         <SideBar />
-        <ContentDiv bg={backGroundImage}>
+        <ContentDiv bg={backGroundImage} isHamburgerOpen={isHamburgerOpen}>
           <Header />
           <Div2>
             <Div3>

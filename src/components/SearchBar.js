@@ -19,6 +19,10 @@ const Input = styled.input`
   background-color: #414a4c;
   color: white;
   padding-right: 2rem; /* Устанавливаем отступ справа, чтобы уступить место для иконки. */
+
+  @media (max-width: 640px) {
+    width: 8rem;
+  }
 `;
 
 const SearchIcon = styled(FaSearch)`
