@@ -7,6 +7,8 @@ const initialState = {
   lastLink: "",
   backGroundImage: "",
   activePage: 1,
+  filterWindow: false,
+  selectredGenres: [],
 };
 
 const movieSlice = createSlice({
@@ -31,6 +33,12 @@ const movieSlice = createSlice({
     setActivePage: (state, action) => {
       state.activePage = action.payload;
     },
+    setFilterWindow: (state, action) => {
+      state.activePage = action.payload;
+    },
+    setSelectedGenres: (state, action) => {
+      state.selectredGenres = action.payload;
+    },
   },
 });
 
@@ -41,6 +49,9 @@ export const {
   setLastLink,
   setBackGroundImage,
   setActivePage,
+  setFilterWindow,
+  setSelectedGenres,
+  setMobileMenuOpen,
 } = movieSlice.actions;
 
 export default movieSlice.reducer;

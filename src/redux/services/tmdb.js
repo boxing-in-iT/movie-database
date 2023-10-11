@@ -14,13 +14,9 @@ export const tmdbApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    // byPopularityDesc: builder.query({
-    //   query: (page) =>
-    //     `discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc`,
-    // }),
     byPopularityDesc: builder.query({
-      query: () =>
-        `discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`,
+      query: (currentPage) =>
+        `discover/movie?include_adult=false&include_video=false&language=en-US&page=${currentPage}&sort_by=popularity.desc`,
     }),
     trendingByDay: builder.query({
       query: (trending) => `trending/movie/${trending}?language=en-US`,
@@ -51,6 +47,17 @@ export const tmdbApi = createApi({
     getMovieByPersonId: builder.query({
       query: (id) => `person/${id}/movie_credits?language=en-US`,
     }),
+    getFilteredMovies: builder.query({
+      query: ({ currentPage, filters }) => {
+        debugger;
+        const { genres, fromDate, toDate } = filters;
+        return `discover/movie?include_adult=false&include_video=false&language=en-US&page=${currentPage}&sort_by=popularity.desc${
+          genres.length > 0 ? `&with_genres=${genres.join(",")}` : ""
+        }${fromDate ? `&release_date.gte=${fromDate}` : ""}${
+          toDate ? `&release_date.lte=${toDate}` : ""
+        }`;
+      },
+    }),
   }),
 });
 
@@ -65,4 +72,5 @@ export const {
   useGetMovieByKeywordQuery,
   useGetPersonByIdQuery,
   useGetMovieByPersonIdQuery,
+  useGetFilteredMoviesQuery,
 } = tmdbApi;

@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MovieCard from "../components/MovieCard";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { useByPopularityDescQuery } from "../redux/services/tmdb";
+import {
+  useByPopularityDescQuery,
+  useGetFilteredMoviesQuery,
+} from "../redux/services/tmdb";
 import {
   selectRankingBy,
   setLastLink,
@@ -11,6 +14,8 @@ import {
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import Error from "../components/Error";
+import FilterWindow from "../components/FilterWindow";
+import { pagin } from "../components/Pagination";
 
 const Section = styled.div`
   display: flex;
@@ -51,6 +56,16 @@ const Title = styled.h2`
   text-align: left;
 `;
 
+const FilterButton = styled.h2`
+  font-weight: bold;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  color: rgb(255 255 255);
+  text-align: left;
+  cursor: pointer;
+  transform: rotate(90deg);
+`;
+
 const Select = styled.select`
   background-color: black;
   color: rgb(209 213 219);
@@ -66,19 +81,46 @@ const Select = styled.select`
 `;
 
 const Main = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+    genres: [], // Выбранные жанры
+    fromDate: null, // Начальная дата
+    toDate: null, // Конечная дата
+  });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { activePage, isOpen } = useSelector((state) => state.movie);
-  const { data, isFetching, error } = useByPopularityDescQuery();
+  const { activePage, isOpen, filterWindow } = useSelector(
+    (state) => state.movie
+  );
+  const topElementRef = useRef(null);
+
+  const { data, isFetching, error } = useByPopularityDescQuery(currentPage);
+
+  const {
+    data: filter,
+    isFetching: loading,
+    error: err,
+  } = useGetFilteredMoviesQuery({
+    currentPage: currentPage,
+    filters: selectedFilters,
+  });
 
   useEffect(() => {
     dispatch(setOpenSideBar(true));
   }, []);
-  console.log(data);
+
+  useEffect(() => {
+    if (topElementRef.current) {
+      window.scrollTo({
+        top: topElementRef.current.offsetTop,
+        behavior: "smooth", // Добавляет плавную анимацию прокрутки
+      });
+    }
+  }, [currentPage]);
 
   if (isFetching) return <Loader />;
-
-  if (error) return <Error />;
+  if (err) return <Error />;
 
   const handleCLick = (id) => {
     dispatch(setOpenSideBar(false));
@@ -86,13 +128,36 @@ const Main = () => {
     navigate(`/movie/${id}`);
   };
 
+  const FilterCLoseOpen = () => {
+    setFilterOpen(!filterOpen);
+  };
+
   return (
-    <Section>
+    <Section ref={topElementRef}>
+      {!filterOpen ? (
+        <>
+          <Container>
+            <Title>Filter</Title>
+            <FilterButton onClick={() => FilterCLoseOpen()}> |||</FilterButton>
+          </Container>
+        </>
+      ) : (
+        <>
+          <FilterWindow
+            onClick={FilterCLoseOpen}
+            selectedFilters={selectedFilters}
+            setSelectedFilters={setSelectedFilters}
+            setFilterOpen={setFilterOpen}
+            setCurrentPage={setCurrentPage}
+          />
+        </>
+      )}
       <CardDiv>
-        {data?.results.map((data, i) => (
-          <MovieCard data={data} onClick={() => handleCLick(data.id)} />
+        {filter?.results.map((data, i) => (
+          <MovieCard key={i} data={data} onClick={() => handleCLick(data.id)} />
         ))}
       </CardDiv>
+      {pagin(500, currentPage, setCurrentPage)}
     </Section>
   );
 };
