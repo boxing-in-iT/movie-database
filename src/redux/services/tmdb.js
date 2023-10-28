@@ -21,6 +21,9 @@ export const tmdbApi = createApi({
     trendingByDay: builder.query({
       query: (trending) => `trending/movie/${trending}?language=en-US`,
     }),
+    allTrendingBy: builder.query({
+      query: (by) => `trending/all/${by}?laguage=en-US`,
+    }),
     getMovieBySearch: builder.query({
       query: (searchTerm) =>
         `search/movie?query=${searchTerm}&include_adult=false&language=en-US&page=1`,
@@ -58,12 +61,19 @@ export const tmdbApi = createApi({
         }`;
       },
     }),
+    getMovieTrailersById: builder.query({
+      query: (ids) => `movie/${ids}/videos?language=en-US`,
+    }),
+    getTvTrailersById: builder.query({
+      query: (ids) => `tv/${ids}/videos?language=en-US`,
+    }),
   }),
 });
 
 export const {
   useByPopularityDescQuery,
   useTrendingByDayQuery,
+  useAllTrendingByQuery,
   useGetMovieBySearchQuery,
   useGetMiveByIdQuery,
   useGetActorsByIdQuery,
@@ -73,4 +83,5 @@ export const {
   useGetPersonByIdQuery,
   useGetMovieByPersonIdQuery,
   useGetFilteredMoviesQuery,
+  useGetMovieTrailersByIdQuery,
 } = tmdbApi;

@@ -3,7 +3,6 @@ import "./App.css";
 import { styled } from "styled-components";
 import Header from "./components/Header";
 import SideBar from "./pages/SideBar";
-import Discover from "./pages/Discover";
 import Main from "./pages/Main";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Search from "./pages/Search";
@@ -12,6 +11,7 @@ import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
 import SideBarMobile from "./components/SideBarMobile";
+import Movies from "./pages/Movies";
 
 const Section = styled.div`
   position: relative;
@@ -70,7 +70,7 @@ const App = () => {
           <Div2>
             <Div3>
               <Routes>
-                <Route path="/trending" element={<Discover />} />
+                <Route path="/movies" element={<Movies />} />
                 <Route path="/" element={<Main />} />
                 <Route path="/movie/:id" element={<MoviePage />} />
                 <Route path="/search/:searchTerm" element={<Search />} />
