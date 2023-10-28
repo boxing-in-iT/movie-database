@@ -34,7 +34,7 @@ const SideBarClose = () => {
       dispatch(setOpenSideBar(true));
       navigate(lastLink);
     } else {
-      navigate("trending");
+      navigate(lastLink);
     }
   };
 

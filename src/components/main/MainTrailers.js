@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useAllTrendingByQuery } from "../../redux/services/tmdb";
-import { FaPlay } from "react-icons/fa";
 
 const Container = styled.div`
   width: 100%;
+  height: 300px;
   background-color: #007bff;
   color: #fff;
   padding: 20px 0;
   border-radius: 10px;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
-// const Content = styled.div`
-//   flex: 1;
-//   padding-left: 20px; /* Add padding to move text to the left */
-// `;
+const Content = styled.div`
+  flex: 1;
+  padding-left: 20px; /* Add padding to move text to the left */
+`;
 
 const Title = styled.h1`
   font-size: 2.5rem;
@@ -42,20 +43,12 @@ const Card = styled.div`
   cursor: pointer;
   transition: transform 0.3s;
   margin: 1rem;
+  z-index: 1000;
 `;
 
 const Image = styled.img`
   width: 100%;
   border-radius: 10px;
-`;
-
-const Icon = styled(FaPlay)`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: #000; /* Change the color as needed */
-  font-size: 24px; /* Adjust the size as needed */
-  z-index: 1;
 `;
 
 const BackgroundImage = styled.div`
@@ -68,40 +61,40 @@ const BackgroundImage = styled.div`
     bg ? `url(https://image.tmdb.org/t/p/w1280${bg})` : "none"};
   background-size: cover;
   background-position: center;
-  opacity: 0.5; /* Increase opacity for a thicker background */
+  opacity: 0.2; /* Increase opacity for a thicker background */
   border-radius: 10px;
-  /* z-index: -1; */
+  z-index: ${({ bg }) => (bg === "" ? `-1` : "1")};
 `;
 
 const MainTrailers = () => {
-  const [backGroundImage, setBackgroundImage] = useState("");
+  const [bgImage, setBgImage] = useState("");
   const {
     data: trendingList,
     isFetching,
     error,
   } = useAllTrendingByQuery("day");
 
-  const handleImageMouseEnter = (imageData) => {
-    setBackgroundImage(imageData);
+  const changeBgImage = (item) => {
+    console.log(bgImage);
+    setBgImage(item);
   };
 
   return (
     <Container>
-      {/* <Content> */}
-      <Title>Trailers</Title>
-      <Cards>
-        {trendingList?.results?.map((data, i) => (
-          <Card key={i}>
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${data.backdrop_path}`}
-              onMouseEnter={() => handleImageMouseEnter(data.backdrop_path)}
-            />
-            <Icon />
-          </Card>
-        ))}
-      </Cards>
-      {/* </Content> */}
-      <BackgroundImage bg={backGroundImage} />
+      <Content>
+        <Title>Trailers</Title>
+        <Cards>
+          {trendingList?.results?.map((data, i) => (
+            <Card key={i}>
+              <Image
+                src={`https://image.tmdb.org/t/p/w500${data.backdrop_path}`}
+                onMouseEnter={() => changeBgImage(data.backdrop_path)}
+              />
+            </Card>
+          ))}
+        </Cards>
+      </Content>
+      <BackgroundImage bg={bgImage} />
     </Container>
   );
 };
