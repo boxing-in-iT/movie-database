@@ -14,10 +14,6 @@ const Card = styled.div`
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s; /* Добавим плавное изменение размера при наведении */
   cursor: pointer;
-
-  &:hover {
-    transform: scale(1.05); /* Увеличим размер при наведении мыши */
-  }
 `;
 
 const Image = styled.img`

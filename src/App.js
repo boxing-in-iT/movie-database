@@ -2,7 +2,6 @@ import logo from "./logo.svg";
 import "./App.css";
 import { styled } from "styled-components";
 import Header from "./components/Header";
-import SideBar from "./pages/SideBar";
 import Main from "./pages/Main";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Search from "./pages/Search";
@@ -10,8 +9,9 @@ import MoviePage from "./pages/MoviePage";
 import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
-import SideBarMobile from "./components/SideBarMobile";
 import Movies from "./pages/Movies";
+import TvShows from "./pages/TvShows";
+import TvPage from "./pages/TvPage";
 
 const Section = styled.div`
   position: relative;
@@ -41,7 +41,6 @@ const Div2 = styled.div`
   flex-direction: column-reverse;
 
   ::-webkit-scrollbar {
-    //????
     display: none;
   }
 
@@ -63,16 +62,16 @@ const App = () => {
   return (
     <BrowserRouter>
       <Section>
-        <SideBarMobile />
-        <SideBar />
         <ContentDiv bg={backGroundImage} isHamburgerOpen={isHamburgerOpen}>
           <Header />
           <Div2>
             <Div3>
               <Routes>
                 <Route path="/movies" element={<Movies />} />
+                <Route path="/tv" element={<TvShows />} />
                 <Route path="/" element={<Main />} />
                 <Route path="/movie/:id" element={<MoviePage />} />
+                <Route path="/tv/:id" element={<TvPage />} />
                 <Route path="/search/:searchTerm" element={<Search />} />
                 <Route path="/byKeywords/:keyword" element={<MovieList />} />
                 <Route path="/person/:id" element={<ActorPage />} />

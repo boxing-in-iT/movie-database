@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import {
+  useGetActingByTvIdQuery,
   useGetActorsByIdQuery,
+  useGetImagesFromByTvQuery,
   useGetImagesFromMovieQuery,
+  useGetKeywordsByTvQuery,
   useGetKeywordsFilmQuery,
   useGetMiveByIdQuery,
   useGetMovieByKeywordQuery,
-  useGetMovieTrailersByIdQuery,
+  useGetTvShowByIdQuery,
+  useGetTvTrailersByIdQuery,
 } from "../redux/services/tmdb";
 import Loader from "../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,11 +62,11 @@ const ImageContainer = styled.div`
   transition: transform 0.3s ease;
   opacity: 1;
   z-index: 1000;
-
   &:hover {
     transform: scale(1.05);
   }
 `;
+
 const Image = styled.img`
   max-width: 100%;
   max-height: 100%;
@@ -132,34 +136,35 @@ const Keyword = styled.div`
   font-size: 1rem;
 `;
 
-const MoviePage = () => {
+const TvPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const { isOpen, backGroundImage } = useSelector((state) => state.movie);
   const [keyw, setKeyw] = useState("key");
 
-  const { data, isFetching, error } = useGetMiveByIdQuery(id);
+  const { data, isFetching, error } = useGetTvShowByIdQuery(id);
   const {
     data: actors,
     isLoading,
     error: actorsError,
-  } = useGetActorsByIdQuery(id);
+  } = useGetActingByTvIdQuery(id);
   const {
     data: keywords,
     isFetching: isFetch,
     error: keywordsError,
-  } = useGetKeywordsFilmQuery(id);
+  } = useGetKeywordsByTvQuery(id);
   const {
     data: images,
     isFetching: isLoaded,
     error: imgError,
-  } = useGetImagesFromMovieQuery(id);
-  const { data: trailer, isFetching: loadingTrailers } =
-    useGetMovieTrailersByIdQuery(id);
+  } = useGetImagesFromByTvQuery(id);
+  const { data: trailer } = useGetTvTrailersByIdQuery(id);
 
-  if (isFetching || isLoading || isFetch || isLoaded || loadingTrailers)
-    return <Loader />;
+  if (isFetching || isLoading || isFetch || isLoaded) return <Loader />;
+  if (error || actorsError) {
+    return <div>Ошибка при загрузке данных</div>;
+  }
 
   const handleCLick = (keyword) => {
     dispatch(setOpenSideBar(false));
@@ -173,6 +178,8 @@ const MoviePage = () => {
     navigate(`/person/${castId}`);
   };
 
+  console.log(images);
+
   return (
     <Section>
       <Container>
@@ -181,7 +188,7 @@ const MoviePage = () => {
           <Image src={`https://image.tmdb.org/t/p/w500${data?.poster_path}`} />
         </ImageContainer>
         <MovieInfoContainer>
-          <Title>{data?.title}</Title>
+          <Title>{data?.name}</Title>
           <ReleaseDate>{data?.release_date}</ReleaseDate>
           <Overview>{data?.overview}</Overview>
         </MovieInfoContainer>
@@ -205,7 +212,7 @@ const MoviePage = () => {
           <div>{data?.original_title}</div>
           <div>Ключові слова</div>
           <Keywords>
-            {keywords.keywords.slice(0, 10).map((data) => (
+            {keywords.results.slice(0, 10).map((data) => (
               <Keyword onClick={() => handleCLick(data.name)} key={data.id}>
                 {data.name}
               </Keyword>
@@ -213,9 +220,9 @@ const MoviePage = () => {
           </Keywords>
         </Info>
       </Div>
-      <Media data={images} videos={trailer} isLoading={loadingTrailers} />
+      <Media data={images} videos={trailer} />
     </Section>
   );
 };
 
-export default MoviePage;
+export default TvPage;

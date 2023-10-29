@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useAllTrendingByQuery } from "../../redux/services/tmdb";
+import {
+  useAllTrendingByQuery,
+  useGetMovieTrailersByIdQuery,
+  useGetTvTrailersByIdQuery,
+} from "../../redux/services/tmdb";
+import useModal from "../../hooks/useModal";
+import Modal from "../Modal";
+import YouTube from "react-youtube";
 
 const Container = styled.div`
   width: 100%;
@@ -67,15 +74,29 @@ const BackgroundImage = styled.div`
 `;
 
 const MainTrailers = () => {
+  const { isShowing, toggle } = useModal();
   const [bgImage, setBgImage] = useState("");
+  const [activeCardId, setActiveCardId] = useState();
+  const [trailerType, setTrailerType] = useState();
   const {
     data: trendingList,
     isFetching,
     error,
   } = useAllTrendingByQuery("day");
+  console.log(trendingList);
+
+  const { data: movieTrailer } = useGetMovieTrailersByIdQuery(activeCardId);
+  const movieTrailerId = (
+    movieTrailer?.results.find((item) => item.type === "Trailer") || {}
+  ).key;
+  const { data: tvTrailers } = useGetTvTrailersByIdQuery(activeCardId);
+
+  const tvTrailerId = (
+    tvTrailers?.results.find((item) => item.type === "Trailer") || {}
+  ).key;
+  console.log(tvTrailerId);
 
   const changeBgImage = (item) => {
-    console.log(bgImage);
     setBgImage(item);
   };
 
@@ -85,7 +106,14 @@ const MainTrailers = () => {
         <Title>Trailers</Title>
         <Cards>
           {trendingList?.results?.map((data, i) => (
-            <Card key={i}>
+            <Card
+              key={i}
+              onClick={() => {
+                toggle();
+                setActiveCardId(data.id);
+                setTrailerType(data.media_type);
+              }}
+            >
               <Image
                 src={`https://image.tmdb.org/t/p/w500${data.backdrop_path}`}
                 onMouseEnter={() => changeBgImage(data.backdrop_path)}
@@ -95,6 +123,13 @@ const MainTrailers = () => {
         </Cards>
       </Content>
       <BackgroundImage bg={bgImage} />
+      <Modal isShowing={isShowing} hide={toggle} title={"trailer"}>
+        {trailerType === "movie" ? (
+          <YouTube videoId={movieTrailerId} />
+        ) : (
+          <YouTube videoId={tvTrailerId} />
+        )}
+      </Modal>
     </Container>
   );
 };
