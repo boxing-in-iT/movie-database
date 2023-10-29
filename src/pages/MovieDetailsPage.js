@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Loader from "../components/Loader";
+import ActorCard from "../components/ActorCard";
+import Media from "../components/Media";
 import {
   useGetActorsByIdQuery,
   useGetImagesFromMovieQuery,
   useGetKeywordsFilmQuery,
   useGetMiveByIdQuery,
-  useGetMovieByKeywordQuery,
   useGetMovieTrailersByIdQuery,
+  useGetTvShowByIdQuery,
+  useGetActingByTvIdQuery,
+  useGetKeywordsByTvQuery,
+  useGetImagesFromByTvQuery,
+  useGetTvTrailersByIdQuery,
 } from "../redux/services/tmdb";
-import Loader from "../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setBackGroundImage,
   setLastLink,
   setOpenSideBar,
 } from "../redux/features/movieSlice";
-import ActorCard from "../components/ActorCard";
-import Media from "../components/Media";
 
 const Section = styled.div`
   display: flex;
@@ -47,7 +51,7 @@ const BackgroundImage = styled.div`
     bg ? `url(https://image.tmdb.org/t/p/w1280${bg})` : "none"};
   background-size: cover;
   background-position: center;
-  opacity: 0.2; /* Измените это значение по вашему усмотрению */
+  opacity: 0.2;
   border-radius: 10px;
 `;
 
@@ -63,6 +67,7 @@ const ImageContainer = styled.div`
     transform: scale(1.05);
   }
 `;
+
 const Image = styled.img`
   max-width: 100%;
   max-height: 100%;
@@ -72,14 +77,14 @@ const Image = styled.img`
 
 const MovieInfoContainer = styled.div`
   flex: 2;
-  padding-left: 2rem; /* Добавляем отступ с левой стороны */
+  padding-left: 2rem;
   color: white;
   z-index: 1000;
 `;
 
 const Title = styled.h1`
   font-size: 2rem;
-  margin-bottom: 1rem; /* Добавляем небольшой отступ снизу */
+  margin-bottom: 1rem;
 `;
 
 const ReleaseDate = styled.h4`
@@ -89,16 +94,15 @@ const ReleaseDate = styled.h4`
 
 const Overview = styled.p`
   font-size: 1rem;
-  text-align: left; /* Выравниваем текст по левому краю */
+  text-align: left;
 `;
 
 const Cards = styled.div`
   max-width: 1200px;
   margin-top: 2rem;
-  display: flex; /* Используем сетку для карточек */
-
-  gap: 1rem; /* Добавим небольшой отступ между карточками */
-  overflow-x: auto; /* Уберем горизонтальную прокрутку */
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
 `;
 
 const Div = styled.div`
@@ -132,45 +136,91 @@ const Keyword = styled.div`
   font-size: 1rem;
 `;
 
-const MoviePage = () => {
+const MovieDetailsPage = ({ type }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const { isOpen, backGroundImage } = useSelector((state) => state.movie);
   const [keyw, setKeyw] = useState("key");
 
-  const { data, isFetching, error } = useGetMiveByIdQuery(id);
+  const isMovie = type === "movie";
+
+  const queryProps = isMovie
+    ? {
+        useGetDetailsQuery: useGetMiveByIdQuery,
+        useGetActorsQuery: useGetActorsByIdQuery,
+        useGetKeywordsQuery: useGetKeywordsFilmQuery,
+        useGetImagesQuery: useGetImagesFromMovieQuery,
+        useGetTrailersQuery: useGetMovieTrailersByIdQuery,
+      }
+    : {
+        useGetDetailsQuery: useGetTvShowByIdQuery,
+        useGetActorsQuery: useGetActingByTvIdQuery,
+        useGetKeywordsQuery: useGetKeywordsByTvQuery,
+        useGetImagesQuery: useGetImagesFromByTvQuery,
+        useGetTrailersQuery: useGetTvTrailersByIdQuery,
+      };
+
+  const { data, isFetching, error } = queryProps.useGetDetailsQuery(id);
+
   const {
     data: actors,
     isLoading,
     error: actorsError,
-  } = useGetActorsByIdQuery(id);
+  } = queryProps.useGetActorsQuery(id);
+
   const {
     data: keywords,
     isFetching: isFetch,
     error: keywordsError,
-  } = useGetKeywordsFilmQuery(id);
+  } = queryProps.useGetKeywordsQuery(id);
+
   const {
     data: images,
     isFetching: isLoaded,
     error: imgError,
-  } = useGetImagesFromMovieQuery(id);
+  } = queryProps.useGetImagesQuery(id);
+
   const { data: trailer, isFetching: loadingTrailers } =
-    useGetMovieTrailersByIdQuery(id);
+    queryProps.useGetTrailersQuery(id);
 
   if (isFetching || isLoading || isFetch || isLoaded || loadingTrailers)
     return <Loader />;
 
+  if (error || actorsError) {
+    return <div>Ошибка при загрузке данных</div>;
+  }
+
   const handleCLick = (keyword) => {
-    dispatch(setOpenSideBar(false));
-    dispatch(setLastLink("/trending"));
     navigate(`/byKeywords/${keyword}`);
   };
 
   const handleCastClick = (castId) => {
-    dispatch(setOpenSideBar(false));
-    dispatch(setLastLink(`/movie/${id}`));
     navigate(`/person/${castId}`);
+  };
+
+  const renderKeywords = () => {
+    if (type === "tv") {
+      return (
+        <Keywords>
+          {keywords?.results?.slice(0, 10).map((data, id) => (
+            <Keyword onClick={() => handleCLick(data.id)} key={id}>
+              {data.name}
+            </Keyword>
+          ))}
+        </Keywords>
+      );
+    } else {
+      return (
+        <Keywords>
+          {keywords?.keywords?.slice(0, 10).map((data, id) => (
+            <Keyword onClick={() => handleCLick(data.id)} key={id}>
+              {data.name}
+            </Keyword>
+          ))}
+        </Keywords>
+      );
+    }
   };
 
   return (
@@ -181,7 +231,7 @@ const MoviePage = () => {
           <Image src={`https://image.tmdb.org/t/p/w500${data?.poster_path}`} />
         </ImageContainer>
         <MovieInfoContainer>
-          <Title>{data?.title}</Title>
+          <Title>{data?.title || data?.name}</Title>
           <ReleaseDate>{data?.release_date}</ReleaseDate>
           <Overview>{data?.overview}</Overview>
         </MovieInfoContainer>
@@ -204,13 +254,7 @@ const MoviePage = () => {
           <div>Original title</div>
           <div>{data?.original_title}</div>
           <div>Ключові слова</div>
-          <Keywords>
-            {keywords.keywords.slice(0, 10).map((data) => (
-              <Keyword onClick={() => handleCLick(data.name)} key={data.id}>
-                {data.name}
-              </Keyword>
-            ))}
-          </Keywords>
+          {renderKeywords()}
         </Info>
       </Div>
       <Media data={images} videos={trailer} isLoading={loadingTrailers} />
@@ -218,4 +262,4 @@ const MoviePage = () => {
   );
 };
 
-export default MoviePage;
+export default MovieDetailsPage;

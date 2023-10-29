@@ -5,13 +5,12 @@ import Header from "./components/Header";
 import Main from "./pages/Main";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Search from "./pages/Search";
-import MoviePage from "./pages/MoviePage";
 import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
-import Movies from "./pages/Movies";
-import TvShows from "./pages/TvShows";
-import TvPage from "./pages/TvPage";
+import MovieDetailsPage from "./pages/MovieDetailsPage";
+import MediaList from "./pages/MediaList";
+import { MOVIE_GENRES, TV_SHOW_GENRES } from "./components/genres";
 
 const Section = styled.div`
   position: relative;
@@ -67,11 +66,28 @@ const App = () => {
           <Div2>
             <Div3>
               <Routes>
-                <Route path="/movies" element={<Movies />} />
-                <Route path="/tv" element={<TvShows />} />
+                <Route
+                  path="/movies"
+                  element={
+                    <MediaList mediaType="movies" genres={MOVIE_GENRES} />
+                  }
+                />
+                <Route
+                  path="/tv"
+                  element={
+                    <MediaList mediaType="tvshows" genres={TV_SHOW_GENRES} />
+                  }
+                />
                 <Route path="/" element={<Main />} />
-                <Route path="/movie/:id" element={<MoviePage />} />
-                <Route path="/tv/:id" element={<TvPage />} />
+                <Route
+                  path="/movie/:id"
+                  element={<MovieDetailsPage type="movie" />}
+                />
+
+                <Route
+                  path="/tv/:id"
+                  element={<MovieDetailsPage type="tv" />}
+                />
                 <Route path="/search/:searchTerm" element={<Search />} />
                 <Route path="/byKeywords/:keyword" element={<MovieList />} />
                 <Route path="/person/:id" element={<ActorPage />} />

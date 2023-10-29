@@ -1,3 +1,4 @@
+// MediaList.js
 import React, { useEffect, useState, useRef } from "react";
 import MovieCard from "../components/MovieCard";
 import styled from "styled-components";
@@ -5,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   useByPopularityDescQuery,
   useGetFilteredMoviesQuery,
+  useGetFilteredTvQuery,
 } from "../redux/services/tmdb";
 import {
   selectRankingBy,
@@ -66,27 +68,13 @@ const FilterButton = styled.h2`
   transform: rotate(90deg);
 `;
 
-const Select = styled.select`
-  background-color: black;
-  color: rgb(209 213 219);
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  border-radius: 0.5rem;
-  outline: none;
-  margin-top: 1.25rem;
-  @media (max-width: 640px) {
-    margin-top: 0px;
-  }
-`;
-
-const Movies = () => {
+const MediaList = ({ mediaType, genres }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
-    genres: [], // Выбранные жанры
-    fromDate: null, // Начальная дата
-    toDate: null, // Конечная дата
+    genres: [],
+    fromDate: null,
+    toDate: null,
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -95,40 +83,41 @@ const Movies = () => {
   );
   const topElementRef = useRef(null);
 
-  const { data, isFetching, error } = useByPopularityDescQuery(currentPage);
+  const mediaQuery =
+    mediaType === "movies" ? useGetFilteredMoviesQuery : useGetFilteredTvQuery;
 
   const {
     data: filter,
     isFetching: loading,
     error: err,
-  } = useGetFilteredMoviesQuery({
+  } = mediaQuery({
     currentPage: currentPage,
     filters: selectedFilters,
   });
 
   useEffect(() => {
-    dispatch(setOpenSideBar(true));
-  }, []);
-
-  useEffect(() => {
     if (topElementRef.current) {
       window.scrollTo({
         top: topElementRef.current.offsetTop,
-        behavior: "smooth", // Добавляет плавную анимацию прокрутки
+        behavior: "smooth",
       });
     }
   }, [currentPage]);
 
-  if (isFetching) return <Loader />;
+  if (loading) return <Loader />;
   if (err) return <Error />;
 
-  const handleCLick = (id) => {
-    dispatch(setOpenSideBar(false));
-    dispatch(setLastLink("/trending"));
-    navigate(`/movie/${id}`);
+  const handleClick = (id) => {
+    if (mediaType === "movies") {
+      dispatch(setOpenSideBar(false));
+      dispatch(setLastLink("/trending"));
+      navigate(`/movie/${id}`);
+    } else if (mediaType === "tvshows") {
+      navigate(`/tv/${id}`);
+    }
   };
 
-  const FilterCLoseOpen = () => {
+  const toggleFilter = () => {
     setFilterOpen(!filterOpen);
   };
 
@@ -138,23 +127,24 @@ const Movies = () => {
         <>
           <Container>
             <Title>Filter</Title>
-            <FilterButton onClick={() => FilterCLoseOpen()}> |||</FilterButton>
+            <FilterButton onClick={() => toggleFilter()}> |||</FilterButton>
           </Container>
         </>
       ) : (
         <>
           <FilterWindow
-            onClick={FilterCLoseOpen}
+            onClick={toggleFilter}
             selectedFilters={selectedFilters}
             setSelectedFilters={setSelectedFilters}
             setFilterOpen={setFilterOpen}
             setCurrentPage={setCurrentPage}
+            genres={genres}
           />
         </>
       )}
       <CardDiv>
         {filter?.results.map((data, i) => (
-          <MovieCard key={i} data={data} onClick={() => handleCLick(data.id)} />
+          <MovieCard key={i} data={data} onClick={() => handleClick(data.id)} />
         ))}
       </CardDiv>
       {pagin(500, currentPage, setCurrentPage)}
@@ -162,4 +152,4 @@ const Movies = () => {
   );
 };
 
-export default Movies;
+export default MediaList;
