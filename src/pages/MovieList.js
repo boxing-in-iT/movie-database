@@ -9,69 +9,75 @@ import {
   setOpenSideBar,
 } from "../redux/features/movieSlice";
 
-const Section = styled.section``;
+// Styled Components
+const Section = styled.section`
+  padding: 20px;
+`;
 
 const Container = styled.div`
-  margin-top: 2rem;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 const MovieCard = styled.div`
-  margin-top: 0.5rem;
-  min-height: 5rem;
+  width: 48%;
+  margin: 10px 0;
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
+  border-radius: 15px;
   background-color: white;
-
-  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const ImageContainer = styled.div`
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: black;
+  flex: 1;
 `;
 
 const Image = styled.img`
-  width: 10rem;
-  border-radius: 25px;
+  width: 100%;
+  height: auto;
 `;
 
 const MovieCardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  color: black;
-  margin-left: 2rem;
+  flex: 1;
+  padding: 20px;
 `;
 
 const Title = styled.p`
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+  transition: color 0.2s;
 
   &:hover {
-    color: blue;
+    color: #0077b6; /* Change to your desired hover color */
   }
+`;
+
+const Overview = styled.p`
+  font-size: 1rem;
+  color: #555;
+  margin: 10px 0;
 `;
 
 const MovieList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { keyword } = useParams();
+
   const {
     data: movies,
     isFetching: fetching,
     error: e,
   } = useGetMovieByKeywordQuery(keyword);
 
-  const handleCLick = (id) => {
+  const handleClick = (id) => {
     dispatch(setOpenSideBar(false));
     dispatch(setLastLink("/trending"));
     navigate(`/movie/${id}`);
@@ -80,26 +86,20 @@ const MovieList = () => {
   return (
     <Section>
       <Container>
-        {movies?.results.map((data, index) => (
-          <MovieCard>
+        {movies?.results.map((data) => (
+          <MovieCard key={data.id}>
             <ImageContainer>
               <Image
                 src={`https://image.tmdb.org/t/p/w500${data?.poster_path}`}
               />
             </ImageContainer>
-
             <MovieCardContainer>
-              <Title onClick={() => handleCLick(data.id)}>{data.title}</Title>
-              <p>{data.overview}</p>
+              <Title onClick={() => handleClick(data.id)}>{data.title}</Title>
+              <Overview>{data.overview}</Overview>
             </MovieCardContainer>
           </MovieCard>
         ))}
       </Container>
-      {/* <div>
-        {movies?.results.map((data, i) => (
-          <h1>{data?.title}</h1>
-        ))}
-      </div> */}
     </Section>
   );
 };
