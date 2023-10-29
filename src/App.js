@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
 import Movies from "./pages/Movies";
+import TvShows from "./pages/TvShows";
+import TvPage from "./pages/TvPage";
 
 const Section = styled.div`
   position: relative;
@@ -66,8 +68,10 @@ const App = () => {
             <Div3>
               <Routes>
                 <Route path="/movies" element={<Movies />} />
+                <Route path="/tv" element={<TvShows />} />
                 <Route path="/" element={<Main />} />
                 <Route path="/movie/:id" element={<MoviePage />} />
+                <Route path="/tv/:id" element={<TvPage />} />
                 <Route path="/search/:searchTerm" element={<Search />} />
                 <Route path="/byKeywords/:keyword" element={<MovieList />} />
                 <Route path="/person/:id" element={<ActorPage />} />

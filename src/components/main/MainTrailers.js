@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {
   useAllTrendingByQuery,
   useGetMovieTrailersByIdQuery,
+  useGetTvTrailersByIdQuery,
 } from "../../redux/services/tmdb";
 import useModal from "../../hooks/useModal";
 import Modal from "../Modal";
@@ -76,17 +77,24 @@ const MainTrailers = () => {
   const { isShowing, toggle } = useModal();
   const [bgImage, setBgImage] = useState("");
   const [activeCardId, setActiveCardId] = useState();
+  const [trailerType, setTrailerType] = useState();
   const {
     data: trendingList,
     isFetching,
     error,
   } = useAllTrendingByQuery("day");
+  console.log(trendingList);
 
-  const { data: trailer } = useGetMovieTrailersByIdQuery(activeCardId);
-  console.log(trailer);
-  const trailerId = (
-    trailer?.results.find((item) => item.type === "Trailer") || {}
+  const { data: movieTrailer } = useGetMovieTrailersByIdQuery(activeCardId);
+  const movieTrailerId = (
+    movieTrailer?.results.find((item) => item.type === "Trailer") || {}
   ).key;
+  const { data: tvTrailers } = useGetTvTrailersByIdQuery(activeCardId);
+
+  const tvTrailerId = (
+    tvTrailers?.results.find((item) => item.type === "Trailer") || {}
+  ).key;
+  console.log(tvTrailerId);
 
   const changeBgImage = (item) => {
     setBgImage(item);
@@ -103,6 +111,7 @@ const MainTrailers = () => {
               onClick={() => {
                 toggle();
                 setActiveCardId(data.id);
+                setTrailerType(data.media_type);
               }}
             >
               <Image
@@ -115,7 +124,11 @@ const MainTrailers = () => {
       </Content>
       <BackgroundImage bg={bgImage} />
       <Modal isShowing={isShowing} hide={toggle} title={"trailer"}>
-        <YouTube videoId={trailerId} />
+        {trailerType === "movie" ? (
+          <YouTube videoId={movieTrailerId} />
+        ) : (
+          <YouTube videoId={tvTrailerId} />
+        )}
       </Modal>
     </Container>
   );

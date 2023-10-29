@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import {
+  useGetMovieTrailersByIdQuery,
+  useGetTvTrailersByIdQuery,
+} from "../redux/services/tmdb";
+import YouTube from "react-youtube";
+import Loader from "./Loader";
 
 const Section = styled.div`
   margin-top: 2rem;
@@ -38,10 +44,11 @@ const Text = styled.h4`
   cursor: pointer;
 `;
 
-const Media = ({ data }) => {
-  const [mediaType, setMediaType] = useState("backdrops");
+const Media = ({ data, videos, isFetching }) => {
+  const [mediaType, setMediaType] = useState("videos");
   const [currentData, setCurrentData] = useState(data?.backdrops);
 
+  console.log(videos);
   const handleClick = (newMediaType) => {
     setMediaType(newMediaType);
     switch (newMediaType) {
@@ -58,12 +65,13 @@ const Media = ({ data }) => {
         break;
     }
   };
+  if (isFetching) return <Loader />;
   return (
     <Section>
       <Title>
         <h3>Media</h3>
         <Buttons>
-          {/* <h4 onClick={() => handleClick("popular")}>Popular</h4> */}
+          <Text onClick={() => handleClick("videos")}>Videos</Text>
           <Text onClick={() => handleClick("backdrops")}>Images</Text>
           <Text onClick={() => handleClick("posters")}>Posters</Text>
         </Buttons>
@@ -73,12 +81,19 @@ const Media = ({ data }) => {
       </Title>
       <MediaContainer>
         <ImageContainer>
-          {currentData.slice(0, 7).map((data, index) => (
-            <Image
-              mediaType={mediaType}
-              src={`https://image.tmdb.org/t/p/w500${data?.file_path}`}
-            />
-          ))}
+          {mediaType === "videos"
+            ? videos?.results
+                .slice(0, 7)
+                .map((data) => <YouTube videoId={data.key} />)
+            : currentData
+                .slice(0, 7)
+                .map((data, index) => (
+                  <Image
+                    key={index}
+                    mediaType={mediaType}
+                    src={`https://image.tmdb.org/t/p/w500${data?.file_path}`}
+                  />
+                ))}
         </ImageContainer>
       </MediaContainer>
     </Section>

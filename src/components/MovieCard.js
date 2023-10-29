@@ -5,6 +5,7 @@ const Cards = styled.div`
   display: flex;
   flex-direction: column;
   width: 250px;
+  height: auto;
   padding: 1rem;
   background-color: rgb(255 255 255 / 0.05);
 
@@ -12,7 +13,7 @@ const Cards = styled.div`
   cursor: pointer;
 
   &:hover {
-    transform-x: 2rem;
+    transform: scale(1.05);
   }
 `;
 
@@ -21,7 +22,6 @@ const Card = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  height: 14rem;
 `;
 
 const Image = styled.img`
@@ -62,7 +62,8 @@ const MovieCard = ({ data, onClick }) => {
         />
       </Card>
       <TextDiv>
-        <Title>{data.original_title}</Title>
+        {data.original_title ? <Title>{data.original_title}</Title> : null}
+        {data.name ? <Title>{data.name}</Title> : null}
       </TextDiv>
     </Cards>
   );

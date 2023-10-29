@@ -61,7 +61,9 @@ const Header = () => {
           <MenuItem>
             <StyledLink to="/movies">Movies</StyledLink>
           </MenuItem>
-          <MenuItem>Your videos</MenuItem>
+          <MenuItem>
+            <StyledLink to="/tv">TV</StyledLink>
+          </MenuItem>
           <MenuItem>Playlist</MenuItem>
         </Menu>
         <SearchBar />

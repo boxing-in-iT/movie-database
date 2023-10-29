@@ -96,6 +96,20 @@ const MainTrending = () => {
     navigate(`/movie/${id}`);
   };
 
+  const goToTvPage = (id) => {
+    dispatch(setOpenSideBar(false));
+    dispatch(setLastLink("/"));
+    navigate(`/tv/${id}`);
+  };
+
+  const handleCardClick = (data) => {
+    if (data.media_type === "movie") {
+      goToMoviePage(data.id);
+    } else if (data.media_type === "tv") {
+      goToTvPage(data.id);
+    }
+  };
+
   return (
     <Container>
       <TitleBox>
@@ -112,7 +126,7 @@ const MainTrending = () => {
 
       <Cards>
         {trendingList?.results.map((data, i) => (
-          <Card onClick={() => goToMoviePage(data.id)} key={i}>
+          <Card onClick={() => handleCardClick(data)} key={i}>
             <Image src={`https://image.tmdb.org/t/p/w500${data.poster_path}`} />
             {data.title ? <h3>{data.title}</h3> : <></>}
             {data.original_name ? <h3>{data.original_name}</h3> : <></>}
