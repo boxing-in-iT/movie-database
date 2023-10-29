@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useAllTrendingByQuery } from "../../redux/services/tmdb";
+import {
+  useAllTrendingByQuery,
+  useGetMovieTrailersByIdQuery,
+} from "../../redux/services/tmdb";
+import useModal from "../../hooks/useModal";
+import Modal from "../Modal";
+import YouTube from "react-youtube";
 
 const Container = styled.div`
   width: 100%;
@@ -67,15 +73,21 @@ const BackgroundImage = styled.div`
 `;
 
 const MainTrailers = () => {
+  const { isShowing, toggle } = useModal();
   const [bgImage, setBgImage] = useState("");
+  const [activeCardId, setActiveCardId] = useState();
   const {
     data: trendingList,
     isFetching,
     error,
   } = useAllTrendingByQuery("day");
 
+  const { data: trailer } = useGetMovieTrailersByIdQuery(activeCardId);
+  const trailerId = (
+    trailer.results.find((item) => item.type === "Trailer") || {}
+  ).id;
+
   const changeBgImage = (item) => {
-    console.log(bgImage);
     setBgImage(item);
   };
 
@@ -85,7 +97,13 @@ const MainTrailers = () => {
         <Title>Trailers</Title>
         <Cards>
           {trendingList?.results?.map((data, i) => (
-            <Card key={i}>
+            <Card
+              key={i}
+              onClick={() => {
+                toggle();
+                setActiveCardId(data.id);
+              }}
+            >
               <Image
                 src={`https://image.tmdb.org/t/p/w500${data.backdrop_path}`}
                 onMouseEnter={() => changeBgImage(data.backdrop_path)}
@@ -95,6 +113,9 @@ const MainTrailers = () => {
         </Cards>
       </Content>
       <BackgroundImage bg={bgImage} />
+      <Modal isShowing={isShowing} hide={toggle} title={"trailer"}>
+        <YouTube videoId={trailerId} />
+      </Modal>
     </Container>
   );
 };
