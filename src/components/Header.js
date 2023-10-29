@@ -2,9 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { blackTheme } from "../style";
 import SearchBar from "./SearchBar";
-import SideBarClose from "./SideBarClose";
-import { useDispatch, useSelector } from "react-redux";
-import { setOpenHamburger } from "../redux/features/movieSlice";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   height: 10svh;
@@ -19,37 +17,54 @@ const NavBar = styled.nav`
   width: 100%;
   display: flex;
   align-items: center;
-  /* justify-content: flex-start; */
   justify-content: space-between;
   padding-right: 1.5rem;
 `;
 
-const HamburgerMenu = styled.h4`
-  display: none;
+const Menu = styled.ul`
+  width: 40%;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+`;
 
-  @media (max-width: 640px) {
-    display: flex;
-    font-size: 1.25rem;
-    transform: rotate(90deg);
-    color: white;
-    cursor: pointer;
+const MenuItem = styled.li`
+  color: white;
+  padding: 5px;
+  width: 200%;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  &:hover {
+    background-color: rgb(214 211 209) !important;
+    color: black;
   }
 `;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+`;
+
 const Header = () => {
-  const dispatch = useDispatch();
-
-  const openHamburger = () => {
-    dispatch(setOpenHamburger(true));
-  };
-
-  const { isOpen } = useSelector((state) => state.movie);
   return (
     <Container>
       <NavBar>
-        {!isOpen ? <SideBarClose /> : <></>}
+        <Menu>
+          <MenuItem>
+            <StyledLink to="/">Main</StyledLink>
+          </MenuItem>
+          <MenuItem>
+            <StyledLink to="/movies">Movies</StyledLink>
+          </MenuItem>
+          <MenuItem>Your videos</MenuItem>
+          <MenuItem>Playlist</MenuItem>
+        </Menu>
         <SearchBar />
-        <HamburgerMenu onClick={() => openHamburger()}>|||</HamburgerMenu>
       </NavBar>
     </Container>
   );

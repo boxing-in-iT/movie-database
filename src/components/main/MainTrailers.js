@@ -83,9 +83,10 @@ const MainTrailers = () => {
   } = useAllTrendingByQuery("day");
 
   const { data: trailer } = useGetMovieTrailersByIdQuery(activeCardId);
+  console.log(trailer);
   const trailerId = (
-    trailer.results.find((item) => item.type === "Trailer") || {}
-  ).id;
+    trailer?.results.find((item) => item.type === "Trailer") || {}
+  ).key;
 
   const changeBgImage = (item) => {
     setBgImage(item);

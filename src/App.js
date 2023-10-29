@@ -2,7 +2,6 @@ import logo from "./logo.svg";
 import "./App.css";
 import { styled } from "styled-components";
 import Header from "./components/Header";
-import SideBar from "./pages/SideBar";
 import Main from "./pages/Main";
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import Search from "./pages/Search";
@@ -10,7 +9,6 @@ import MoviePage from "./pages/MoviePage";
 import { useSelector } from "react-redux";
 import MovieList from "./pages/MovieList";
 import ActorPage from "./pages/ActorPage";
-import SideBarMobile from "./components/SideBarMobile";
 import Movies from "./pages/Movies";
 
 const Section = styled.div`
@@ -41,7 +39,6 @@ const Div2 = styled.div`
   flex-direction: column-reverse;
 
   ::-webkit-scrollbar {
-    //????
     display: none;
   }
 
@@ -63,8 +60,6 @@ const App = () => {
   return (
     <BrowserRouter>
       <Section>
-        <SideBarMobile />
-        <SideBar />
         <ContentDiv bg={backGroundImage} isHamburgerOpen={isHamburgerOpen}>
           <Header />
           <Div2>
